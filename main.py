@@ -6,6 +6,7 @@ if __name__ == '__main__':
     env = Env()
     env.read_env()
 
+    telegram_token = env('TELEGRAM_TOKEN', 'TELEGRAM_TOKEN')
     devman_token = env('DEVMAN_TOKEN', 'DEVMAN_TOKEN')
 
     user_reviews_url = 'https://dvmn.org/api/long_polling/'
@@ -17,16 +18,25 @@ if __name__ == '__main__':
     params = {}
 
     while True:
-        response = requests.get(
-            user_reviews_url,
-            headers=headers,
-            params=params
-        )
+        try:
+            response = requests.get(
+                user_reviews_url,
+                headers=headers,
+                params=params
+            )
+        except requests.exceptions.ReadTimeout or requests.exceptions.ConnectionError:
+            continue
+
         response.raise_for_status()
 
         resp_json = response.json()
 
         print(resp_json)
 
-        if 'status' in resp_json and resp_json['status'] == 'timeout':
-            params.update(timestamp=resp_json.get('timestamp_to_request'))
+        if resp_json['status'] == 'timeout':
+            timestamp = int(resp_json.get('timestamp_to_request'))
+        else:
+            timestamp = int(resp_json.get('last_attempt_timestamp')) + 1
+            # params = {}
+
+        params.update(timestamp=timestamp)
