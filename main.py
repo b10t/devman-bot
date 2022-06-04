@@ -1,5 +1,41 @@
 import requests
 from environs import Env
+from telegram import ForceReply, Update
+from telegram.ext import (CommandHandler, Filters,
+                          MessageHandler, Updater, CallbackContext)
+
+
+def create_and_start_bot(telegram_token):
+    """Creates and launches a telegram bot."""
+    updater = Updater(telegram_token)
+
+    dispatcher = updater.dispatcher
+
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("help", help_command))
+
+    dispatcher.add_handler(MessageHandler(
+        Filters.text & ~Filters.command, echo))
+
+    updater.start_polling()
+
+    return updater.bot
+
+
+def start(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /start is issued."""
+    user = update.effective_user
+    update.message.reply_text(f'Hi {user.first_name}!')
+
+
+def help_command(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+
+def echo(update: Update, context: CallbackContext) -> None:
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
 
 
 if __name__ == '__main__':
@@ -7,7 +43,10 @@ if __name__ == '__main__':
     env.read_env()
 
     telegram_token = env('TELEGRAM_TOKEN', 'TELEGRAM_TOKEN')
+    telegram_chat_id = env.int('TELEGRAM_CHAT_ID', 0)
     devman_token = env('DEVMAN_TOKEN', 'DEVMAN_TOKEN')
+
+    telegram_bot = create_and_start_bot(telegram_token)
 
     user_reviews_url = 'https://dvmn.org/api/long_polling/'
 
@@ -29,14 +68,29 @@ if __name__ == '__main__':
 
         response.raise_for_status()
 
-        resp_json = response.json()
+        reviews_result = response.json()
 
-        print(resp_json)
+        print(reviews_result)
 
-        if resp_json['status'] == 'timeout':
-            timestamp = int(resp_json.get('timestamp_to_request'))
+        if reviews_result['status'] == 'timeout':
+            timestamp = int(reviews_result.get('timestamp_to_request'))
         else:
-            timestamp = int(resp_json.get('last_attempt_timestamp')) + 1
-            # params = {}
+            timestamp = int(reviews_result.get('last_attempt_timestamp')) + 1
+
+            for review in reviews_result.get('new_attempts'):
+                review_status = 'Преподавателю всё понравилось, ' \
+                    'можно переходить к следующему уроку.'
+
+                if review.get('is_negative'):
+                    review_status = 'К сожалению, в работе нашлись ошибки.'
+
+                message = f'У Вас проверили работу "{review.get("lesson_title")}".\n\n' \
+                    f'{review_status}\n\n' \
+                    f'Ссылка на урок: {review.get("lesson_url")}'
+
+                telegram_bot.send_message(
+                    chat_id=telegram_chat_id,
+                    text=message
+                )
 
         params.update(timestamp=timestamp)
