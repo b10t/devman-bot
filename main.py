@@ -1,8 +1,8 @@
 import requests
 from environs import Env
-from telegram import ForceReply, Update
-from telegram.ext import (CommandHandler, Filters,
-                          MessageHandler, Updater, CallbackContext)
+from telegram import Update
+from telegram.ext import (CallbackContext, CommandHandler, Filters,
+                          MessageHandler, Updater)
 
 
 def create_and_start_bot(telegram_token):
@@ -84,13 +84,13 @@ if __name__ == '__main__':
                 if review.get('is_negative'):
                     review_status = 'К сожалению, в работе нашлись ошибки.'
 
-                message = f'У Вас проверили работу "{review.get("lesson_title")}".\n\n' \
+                telegram_bot_message = f'У Вас проверили работу "{review.get("lesson_title")}".\n\n' \
                     f'{review_status}\n\n' \
                     f'Ссылка на урок: {review.get("lesson_url")}'
 
                 telegram_bot.send_message(
                     chat_id=telegram_chat_id,
-                    text=message
+                    text=telegram_bot_message
                 )
 
         params.update(timestamp=timestamp)
