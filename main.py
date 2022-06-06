@@ -48,9 +48,9 @@ if __name__ == '__main__':
         reviews_result = response.json()
 
         if reviews_result['status'] == 'timeout':
-            timestamp = int(reviews_result.get('timestamp_to_request'))
+            timestamp = reviews_result.get('timestamp_to_request')
         else:
-            timestamp = int(reviews_result.get('last_attempt_timestamp')) + 1
+            timestamp = reviews_result.get('last_attempt_timestamp') + 1
 
             for review in reviews_result.get('new_attempts'):
                 review_status = 'Преподавателю всё понравилось, ' \
