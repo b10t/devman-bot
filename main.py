@@ -1,4 +1,5 @@
 import requests
+import time
 from environs import Env
 from telegram import Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
@@ -64,6 +65,7 @@ if __name__ == '__main__':
                 params=params
             )
         except requests.exceptions.ReadTimeout or requests.exceptions.ConnectionError:
+            time.sleep(5)
             continue
 
         response.raise_for_status()
