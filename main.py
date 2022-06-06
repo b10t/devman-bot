@@ -3,6 +3,7 @@ from textwrap import dedent
 
 import requests
 from environs import Env
+import telegram
 from telegram.ext import Updater
 
 
@@ -22,7 +23,8 @@ if __name__ == '__main__':
     telegram_chat_id = env.int('TELEGRAM_CHAT_ID', 0)
     devman_token = env('DEVMAN_TOKEN', 'DEVMAN_TOKEN')
 
-    telegram_bot = create_and_start_bot(telegram_token)
+    # create_and_start_bot(telegram_token)
+    telegram_bot = telegram.Bot(telegram_token)
 
     user_reviews_url = 'https://dvmn.org/api/long_polling/'
 
@@ -52,7 +54,7 @@ if __name__ == '__main__':
         if reviews_result['status'] == 'timeout':
             timestamp = reviews_result.get('timestamp_to_request')
         else:
-            timestamp = reviews_result.get('last_attempt_timestamp') + 1
+            timestamp = reviews_result.get('last_attempt_timestamp')
 
             for review in reviews_result.get('new_attempts'):
                 review_status = 'Преподавателю всё понравилось, ' \
