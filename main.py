@@ -47,8 +47,6 @@ if __name__ == '__main__':
 
         reviews_result = response.json()
 
-        print(reviews_result)
-
         if reviews_result['status'] == 'timeout':
             timestamp = int(reviews_result.get('timestamp_to_request'))
         else:
