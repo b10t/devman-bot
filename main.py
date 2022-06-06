@@ -39,7 +39,9 @@ if __name__ == '__main__':
                 headers=headers,
                 params=params
             )
-        except requests.exceptions.ReadTimeout or requests.exceptions.ConnectionError:
+        except requests.exceptions.ReadTimeout:
+            continue
+        except requests.exceptions.ConnectionError:
             time.sleep(5)
             continue
 
