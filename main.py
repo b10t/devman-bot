@@ -7,14 +7,6 @@ import telegram
 from telegram.ext import Updater
 
 
-def create_and_start_bot(telegram_token):
-    """Creates and launches a telegram bot."""
-    updater = Updater(telegram_token)
-    updater.start_polling()
-
-    return updater.bot
-
-
 if __name__ == '__main__':
     env = Env()
     env.read_env()
@@ -23,7 +15,6 @@ if __name__ == '__main__':
     telegram_chat_id = env.int('TELEGRAM_CHAT_ID', 0)
     devman_token = env('DEVMAN_TOKEN', 'DEVMAN_TOKEN')
 
-    # create_and_start_bot(telegram_token)
     telegram_bot = telegram.Bot(telegram_token)
 
     user_reviews_url = 'https://dvmn.org/api/long_polling/'
