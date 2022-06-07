@@ -7,18 +7,17 @@ import requests
 import telegram
 from environs import Env
 
+logging.basicConfig(format="%(message)s")
+logger = logging.getLogger("TelegramBotLogger")
+logger.setLevel(logging.INFO)
+
 
 class BotLogsHandler(logging.Handler):
-    def __init__(self, telegram_token, telegram_chat_id) -> None:
+    def __init__(self, telegram_bot, telegram_chat_id) -> None:
         super().__init__(logging.INFO)
 
-        self.telegram_token = telegram_token
         self.telegram_chat_id = telegram_chat_id
-        self.telegram_bot = telegram.Bot(telegram_token)
-
-    @property
-    def bot(self):
-        return self.telegram_bot
+        self.telegram_bot = telegram_bot
 
     def emit(self, record):
         log_entry = self.format(record)
@@ -36,14 +35,10 @@ if __name__ == '__main__':
     telegram_chat_id = env.int('TELEGRAM_CHAT_ID', 0)
     devman_token = env('DEVMAN_TOKEN', 'DEVMAN_TOKEN')
 
-    bot_logs_handler = BotLogsHandler(telegram_token, telegram_chat_id)
+    telegram_bot = telegram.Bot(telegram_token)
 
-    logging.basicConfig(format="%(message)s")
-    logger = logging.getLogger("TelegramBotLogger")
-    logger.setLevel(logging.INFO)
+    bot_logs_handler = BotLogsHandler(telegram_bot, telegram_chat_id)
     logger.addHandler(bot_logs_handler)
-
-    telegram_bot = bot_logs_handler.bot
 
     user_reviews_url = 'https://dvmn.org/api/long_polling/'
 
