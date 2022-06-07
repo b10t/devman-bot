@@ -1,5 +1,6 @@
 import logging
 import time
+import traceback
 from textwrap import dedent
 
 import requests
@@ -54,43 +55,48 @@ if __name__ == '__main__':
 
     while True:
         try:
-            response = requests.get(
-                user_reviews_url,
-                headers=headers,
-                params=params
-            )
-        except requests.exceptions.ReadTimeout:
-            continue
-        except requests.exceptions.ConnectionError:
-            time.sleep(5)
-            continue
-
-        response.raise_for_status()
-
-        reviews_result = response.json()
-
-        if reviews_result['status'] == 'timeout':
-            timestamp = reviews_result.get('timestamp_to_request')
-        else:
-            timestamp = reviews_result.get('last_attempt_timestamp')
-
-            for review in reviews_result.get('new_attempts'):
-                review_status = 'Преподавателю всё понравилось, ' \
-                    'можно переходить к следующему уроку.'
-
-                if review.get('is_negative'):
-                    review_status = 'К сожалению, в работе нашлись ошибки.'
-
-                telegram_bot_message = f'''\
-                    У Вас проверили работу "{review.get("lesson_title")}".
-
-                    {review_status}
-
-                    Ссылка на урок: {review.get("lesson_url")}'''
-
-                telegram_bot.send_message(
-                    chat_id=telegram_chat_id,
-                    text=dedent(telegram_bot_message)
+            asd = 1 / 0
+            try:
+                response = requests.get(
+                    user_reviews_url,
+                    headers=headers,
+                    params=params
                 )
+            except requests.exceptions.ReadTimeout:
+                continue
+            except requests.exceptions.ConnectionError:
+                time.sleep(5)
+                continue
 
-        params.update(timestamp=timestamp)
+            response.raise_for_status()
+
+            reviews_result = response.json()
+
+            if reviews_result['status'] == 'timeout':
+                timestamp = reviews_result.get('timestamp_to_request')
+            else:
+                timestamp = reviews_result.get('last_attempt_timestamp')
+
+                for review in reviews_result.get('new_attempts'):
+                    review_status = 'Преподавателю всё понравилось, ' \
+                        'можно переходить к следующему уроку.'
+
+                    if review.get('is_negative'):
+                        review_status = 'К сожалению, в работе нашлись ошибки.'
+
+                    telegram_bot_message = f'''\
+                        У Вас проверили работу "{review.get("lesson_title")}".
+
+                        {review_status}
+
+                        Ссылка на урок: {review.get("lesson_url")}'''
+
+                    telegram_bot.send_message(
+                        chat_id=telegram_chat_id,
+                        text=dedent(telegram_bot_message)
+                    )
+
+            params.update(timestamp=timestamp)
+
+        except Exception:
+            logger.error(traceback.format_exc())
