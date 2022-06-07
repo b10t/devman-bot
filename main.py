@@ -55,7 +55,6 @@ if __name__ == '__main__':
 
     while True:
         try:
-            asd = 1 / 0
             try:
                 response = requests.get(
                     user_reviews_url,
