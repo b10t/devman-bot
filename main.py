@@ -7,9 +7,7 @@ import requests
 import telegram
 from environs import Env
 
-logging.basicConfig(format="%(message)s")
 logger = logging.getLogger("TelegramBotLogger")
-logger.setLevel(logging.INFO)
 
 
 class BotLogsHandler(logging.Handler):
@@ -28,6 +26,9 @@ class BotLogsHandler(logging.Handler):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format="%(message)s")
+    logger.setLevel(logging.INFO)
+
     env = Env()
     env.read_env()
 
