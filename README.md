@@ -24,3 +24,17 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
+
+## Запуск, используя docker  
+
+Docker должен быть установлен на локальную машину.  
+
+Для сборки образа, используем команду:  
+```bash
+docker build --pull --rm -f "Dockerfile" -t devmanbot:latest "."
+```
+
+Для запуска контейнера, необходимо запустить команду:  
+```bash
+docker run --env-file .env devmanbot:latest
+```
