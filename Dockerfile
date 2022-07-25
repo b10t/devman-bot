@@ -11,6 +11,6 @@ RUN /usr/local/bin/python -m pip install --user --upgrade pip
 COPY --chown=bot:bot requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-COPY main.py main.py
+COPY --chown=bot:bot main.py main.py
 
 CMD [ "python3", "main.py" ]
