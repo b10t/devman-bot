@@ -5,9 +5,9 @@ import traceback
 from textwrap import dedent
 
 import pytz
+import resource
 import requests
 from environs import Env
-#from memory_profiler import memory_usage
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, CommandHandler, Dispatcher, Updater
 from telegram.utils.helpers import escape_markdown
@@ -34,7 +34,7 @@ class BotLogsHandler(logging.Handler):
 
 def get_memory_usage():
     """Возвращает кол-во используемой памяти."""
-    memory = 0 # round(memory_usage().pop(), 3)
+    memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1000
     return escape_markdown(
         f'{memory}',
         2
