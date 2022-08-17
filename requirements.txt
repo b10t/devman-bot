@@ -1,4 +1,4 @@
 environs==9.5.0
-memory-profiler==0.60.0
+#memory-profiler==0.60.0
 python-telegram-bot==13.12
 requests==2.27.1

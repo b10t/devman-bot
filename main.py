@@ -7,7 +7,7 @@ from textwrap import dedent
 import pytz
 import requests
 from environs import Env
-from memory_profiler import memory_usage
+#from memory_profiler import memory_usage
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, CommandHandler, Dispatcher, Updater
 from telegram.utils.helpers import escape_markdown
@@ -34,7 +34,7 @@ class BotLogsHandler(logging.Handler):
 
 def get_memory_usage():
     """Возвращает кол-во используемой памяти."""
-    memory = round(memory_usage().pop(), 3)
+    memory = 0 # round(memory_usage().pop(), 3)
     return escape_markdown(
         f'{memory}',
         2
@@ -63,8 +63,6 @@ def report(update: Update, context: CallbackContext) -> None:
 if __name__ == '__main__':
     logging.basicConfig(format="%(message)s")
     logger.setLevel(logging.INFO)
-
-    print(memory_usage())
 
     env = Env()
     env.read_env()
