@@ -36,5 +36,5 @@ docker build --pull --rm -f "Dockerfile" -t devmanbot:latest "."
 
 Для запуска контейнера, необходимо запустить команду:  
 ```bash
-docker run --env-file .env devmanbot:latest
+docker run --restart=always --detach --env-file .env --name=devmanbot devmanbot:latest
 ```
